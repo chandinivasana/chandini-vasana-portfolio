@@ -68,9 +68,9 @@ a { color: inherit; text-decoration: none; }
 .availability { display: flex; align-items: center; gap: 10px; }
 .status-dot { width: 8px; height: 8px; background-color: #00ff66; border-radius: 50%; box-shadow: 0 0 10px #00ff66; animation: pulse 2s infinite; }
 @keyframes pulse { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 102, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(0, 255, 102, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 102, 0); } }
-.hero-title { font-family: var(--font-heading); font-size: clamp(4rem, 12vw, 14rem); font-weight: 800; line-height: 0.85; letter-spacing: -0.04em; text-transform: uppercase; margin-bottom: 6vh; }
+.hero-title { font-family: var(--font-heading); font-size: clamp(3rem, 10vw, 12rem); font-weight: 800; line-height: 0.85; letter-spacing: -0.04em; text-transform: uppercase; margin-bottom: 6vh; }
 .line-wrap { overflow: hidden; }
-.indent { margin-left: 15vw; }
+.indent { margin-left: 10vw; }
 .hero-bottom { display: flex; justify-content: space-between; align-items: flex-end; }
 .hero-subtitle { font-size: clamp(1rem, 2vw, 1.5rem); max-width: 500px; color: var(--text-muted); line-height: 1.5; }
 .scroll-indicator { display: flex; flex-direction: column; align-items: center; gap: 10px; font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); }
