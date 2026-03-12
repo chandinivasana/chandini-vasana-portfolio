@@ -1,126 +1,122 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // ... (all your existing JS code for navbar, smooth scroll, mobile nav, back-to-top)
+// script.js
+gsap.registerPlugin(ScrollTrigger);
 
-    const navbar = document.getElementById('navbar');
-    const navLinks = document.querySelectorAll('#navbar nav ul li a');
-    const mobileNavToggle = document.querySelector('.mobile-nav-toggle');
-    const navMenu = document.querySelector('#navbar nav');
-    const backToTopButton = document.querySelector('.back-to-top');
-    // const themeToggleButton = document.querySelector('.theme-toggle'); // Removed for this dark-theme only version
-    // const sunIcon = themeToggleButton.querySelector('.fa-sun');
-    // const moonIcon = themeToggleButton.querySelector('.fa-moon');
-    const allSections = document.querySelectorAll('main section'); // Renamed from 'sections' to avoid conflict
+// Custom Cursor
+const cursor = document.querySelector('.cursor');
+const cursorFollower = document.querySelector('.cursor-follower');
+const links = document.querySelectorAll('a, button, .project-item');
 
-    // Sticky Navbar & Back to Top Button Visibility
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 50) {
-            navbar.classList.add('scrolled');
-        } else {
-            navbar.classList.remove('scrolled');
-        }
-
-        if (window.scrollY > 300) {
-            backToTopButton.classList.add('visible');
-        } else {
-            backToTopButton.classList.remove('visible');
-        }
-
-        // Active link highlighting
-        let currentSectionId = '';
-        allSections.forEach(section => {
-            const sectionTop = section.offsetTop;
-            const sectionHeight = section.clientHeight;
-            // Adjust offset for better accuracy with fixed navbar
-            if (pageYOffset >= (sectionTop - navbar.offsetHeight - sectionHeight / 3)) {
-                currentSectionId = section.getAttribute('id');
-            }
+if (window.innerWidth > 768) {
+    document.addEventListener('mousemove', (e) => {
+        gsap.to(cursor, {
+            x: e.clientX,
+            y: e.clientY,
+            duration: 0.1,
+            ease: "power2.out"
         });
-
-        navLinks.forEach(link => {
-            link.classList.remove('active');
-            const href = link.getAttribute('href');
-            if (href && href.substring(1) === currentSectionId) {
-                link.classList.add('active');
-            }
-        });
-         // Special case for hero section when at top
-        if (window.scrollY < allSections[0].offsetTop + allSections[0].offsetHeight / 2 - navbar.offsetHeight) {
-             navLinks.forEach(link => link.classList.remove('active'));
-             if (navLinks[0] && navLinks[0].getAttribute('href') === '#hero') {
-                 navLinks[0].classList.add('active');
-             }
-        }
-    });
-
-    // Smooth scrolling for nav links and back-to-top
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            const targetId = this.getAttribute('href');
-            const targetElement = document.querySelector(targetId);
-            if (targetElement) {
-                const navbarHeight = navbar.offsetHeight;
-                let targetPosition = targetElement.offsetTop - navbarHeight;
-
-                // Ensure not scrolling too far up for the hero section
-                if (targetId === '#hero') {
-                    targetPosition = 0;
-                } else {
-                    targetPosition +=1; // Small offset for non-hero sections
-                }
-
-
-                window.scrollTo({
-                    top: targetPosition,
-                    behavior: 'smooth'
-                });
-                 // Close mobile nav if open after click
-                if (navMenu.classList.contains('active')) {
-                    navMenu.classList.remove('active');
-                    mobileNavToggle.classList.remove('active'); // For X icon toggle
-                    // mobileNavToggle.querySelector('i').classList.replace('fa-times', 'fa-bars');
-                }
-            }
+        gsap.to(cursorFollower, {
+            x: e.clientX,
+            y: e.clientY,
+            duration: 0.3,
+            ease: "power2.out"
         });
     });
 
-    // Mobile Navigation Toggle
-    mobileNavToggle.addEventListener('click', () => {
-        navMenu.classList.toggle('active');
-        mobileNavToggle.classList.toggle('active'); // For X icon toggle
-        // const icon = mobileNavToggle.querySelector('i');
-        // if (navMenu.classList.contains('active')) {
-        //     icon.classList.remove('fa-bars');
-        //     icon.classList.add('fa-times');
-        // } else {
-        //     icon.classList.remove('fa-times');
-        //     icon.classList.add('fa-bars');
-        // }
-    });
-
-    // Update current year in footer
-    document.getElementById('currentYear').textContent = new Date().getFullYear();
-
-    // Advanced Scroll Reveal for sections
-    const revealSections = document.querySelectorAll('.content-section');
-    const revealObserverOptions = {
-        root: null, // relative to document viewport
-        rootMargin: '0px',
-        threshold: 0.15 // 15% of item is visible
-    };
-
-    const revealCallback = (entries, observer) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('is-visible');
-                observer.unobserve(entry.target); // Stop observing once visible
-            }
+    links.forEach(link => {
+        link.addEventListener('mouseenter', () => {
+            cursor.classList.add('hovered');
+            cursorFollower.classList.add('hovered');
         });
-    };
-
-    const revealObserver = new IntersectionObserver(revealCallback, revealObserverOptions);
-    revealSections.forEach(section => {
-        revealObserver.observe(section);
+        link.addEventListener('mouseleave', () => {
+            cursor.classList.remove('hovered');
+            cursorFollower.classList.remove('hovered');
+        });
     });
+}
 
+// Initialize Lenis Smooth Scroll
+const lenis = new Lenis({
+    duration: 1.2,
+    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    smooth: true,
+});
+
+function raf(time) {
+    lenis.raf(time);
+    requestAnimationFrame(raf);
+}
+requestAnimationFrame(raf);
+
+// Integrate Lenis with GSAP ScrollTrigger
+lenis.on('scroll', ScrollTrigger.update);
+gsap.ticker.add((time)=>{
+  lenis.raf(time * 1000);
+});
+gsap.ticker.lagSmoothing(0, 0);
+
+// Animations
+
+// Hero Reveal
+const tl = gsap.timeline();
+
+tl.from(".hero-title .line", {
+    y: 200,
+    duration: 1.5,
+    stagger: 0.2,
+    ease: "power4.out",
+    delay: 0.2
+})
+.from(".hero-top, .hero-bottom", {
+    opacity: 0,
+    y: 20,
+    duration: 1,
+    ease: "power2.out"
+}, "-=1");
+
+// Fade Up Elements
+gsap.utils.toArray('.fade-up').forEach(element => {
+    gsap.from(element, {
+        scrollTrigger: {
+            trigger: element,
+            start: "top 85%",
+        },
+        y: 50,
+        opacity: 0,
+        duration: 1,
+        ease: "power3.out"
+    });
+});
+
+// Text Reveal Animation for sections
+gsap.utils.toArray('.text-reveal').forEach(text => {
+    gsap.from(text, {
+        scrollTrigger: {
+            trigger: text,
+            start: "top 80%",
+        },
+        y: 100,
+        opacity: 0,
+        duration: 1.2,
+        ease: "power4.out"
+    });
+});
+
+// Parallax effect on large text
+gsap.to(".huge-text", {
+    scrollTrigger: {
+        trigger: ".contact-section",
+        start: "top bottom",
+        end: "bottom top",
+        scrub: 1
+    },
+    y: -100,
+    ease: "none"
+});
+
+// Smooth scroll to sections for nav links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        lenis.scrollTo(this.getAttribute('href'));
+    });
 });
