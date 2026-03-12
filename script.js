@@ -59,12 +59,16 @@ gsap.ticker.lagSmoothing(0, 0);
 // Hero Reveal
 const tl = gsap.timeline();
 
-tl.from(".hero-title .line", {
-    y: 200,
+tl.to(".hero-title .line", {
+    y: 0,
+    opacity: 1,
     duration: 1.5,
     stagger: 0.2,
     ease: "power4.out",
-    delay: 0.2
+    delay: 0.2,
+    onStart: () => {
+        document.querySelectorAll('.hero-title .line').forEach(el => el.classList.add('visible'));
+    }
 })
 .from(".hero-top, .hero-bottom", {
     opacity: 0,
@@ -101,6 +105,19 @@ gsap.utils.toArray('.text-reveal').forEach(text => {
     });
 });
 
+// Huge Text Visibility Fix
+gsap.to(".huge-text", {
+    scrollTrigger: {
+        trigger: ".contact-section",
+        start: "top 80%",
+        onEnter: () => document.querySelector('.huge-text').classList.add('visible')
+    },
+    opacity: 1,
+    y: 0,
+    duration: 1.5,
+    ease: "power4.out"
+});
+
 // Parallax effect on large text
 gsap.to(".huge-text", {
     scrollTrigger: {
@@ -109,7 +126,7 @@ gsap.to(".huge-text", {
         end: "bottom top",
         scrub: 1
     },
-    y: -100,
+    y: -50,
     ease: "none"
 });
 
